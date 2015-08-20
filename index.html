@@ -1,0 +1,319 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>What's My Forecast?</title>
+<style type="text/css">
+
+@font-face {
+  font-family: "Myriad Pro";
+  src: url('MyriadPro-Regular.otf') format('opentype');
+}
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font-size: 12pt;
+	font: inherit;
+	vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+body {
+	line-height: 1;
+	width:100%; 
+	height:100%;
+	background:url('bg2.jpg') no-repeat;
+	background-color:#4ebc28;
+	background-size:cover;
+	font-family:"Myriad Pro";
+	overflow:hidden;
+}
+ol, ul {
+	list-style: none;
+}
+img{width:100%;}
+
+.bold{font-weight:bold;}
+
+.inner_container{width:90%; max-width:1200px; margin:0 auto;}
+
+.cloud{position:absolute;  z-index:1; overflow:hidden;}
+
+#cloud1{width:25%; top:0; right:10vw; opacity:0.65; animation: cloudAnimation1 255s linear infinite;}
+
+#cloud2{width:20%; opacity:0.65; top:150px; right:25vw; animation: cloudAnimation2 205s linear infinite;}
+
+#cloud3{width:25%; opacity:0.70; top:50px; right:75vw; animation: cloudAnimation3 75s linear infinite;}
+
+@keyframes cloudAnimation1
+{
+    from {
+        right: 0;
+    }
+    to {
+        right: 100%;
+    }
+}
+
+@keyframes cloudAnimation2
+{
+    from {
+        right: -30%;
+    }
+    to {
+        right: 100%;
+    }
+}
+
+@keyframes cloudAnimation3
+{
+    from {
+        right: 40%;
+    }
+    to {
+        right: 100%;
+    }
+}
+
+#title{width:80%; height:125px; margin:50px auto; position:relative; z-index:999;}
+
+#zip_check{margin:20px auto; text-align:center; position:relative; z-index:999;}
+
+#zip_title{width:250px; height:50px; background:#235763;  border-radius:20px 0px 0px 20px; color:#fff; display:inline-block; }
+
+#zip_title h2{  font-size:175%; line-height:55px;}
+
+#zip_field{display:inline-block; position:relative; top:-1px;}
+
+#zip_code{width:150px; height:40px; padding:0px 15px; text-align:center; font-size:150%;  overflow:hidden; border:#235763 5px solid;}
+
+#submit_button{font-family:"Myriad Pro"; font-size:175%; color:#fff; width:55px; height:50px; line-height:50px; background:#093; border:none; border-radius:0px 20px 20px 0px; position:relative; display:inline-block; top:-2px;
+transition: background-color 0.5s ease;
+}
+
+#submit_button:hover{cursor:pointer; background:#0C0; }
+
+
+#results{width:700px; height:400px; position:relative; margin:0 auto; padding:10px; background:#235763; border:#fff 2px solid; border-radius: 10px; color:#fff; opacity:0; transition:all 2s ease; z-index:999;}
+
+#main_weather{width:100%; height:200px; background:#1a3e46; position:relative; margin-bottom:15px;  text-align:center;}
+
+#city_and_weather_block{width:45%; display:inline-block; text-align:left;  position:relative; bottom:-80px; right:25px; text-shadow:#000 2px 2px 1px;  font-size:150%;}
+
+#city{font-size:110%; text-shadow:#000 2px 2px 2px;}
+
+#temperature_block{width:45%; display:inline-block; text-align:right;  position:relative; bottom:-80px; right:25px; text-shadow:#000 2px 2px 3px;}
+
+#temperature{font-size:400%; }
+
+.range{font-size:150%; display:inline-block; margin:0 10px; position:relative; right:-25px; text-shadow:#000 2px 2px 1px; }
+
+#additional_descriptions{ width:100%; display:inline-block;  position:relative; text-align:center;}
+</style>
+</head>
+<body>
+<div class="inner_container">
+	<div class="cloud" id="cloud1"><img src="cloud1.png" alt="Cloud1" /></div>
+    <div class="cloud" id="cloud2"><img src="cloud2.png" alt="Cloud2" /></div>
+    <div class="cloud" id="cloud3"><img src="cloud3.png" alt="Cloud3" /></div>
+	<div id="title">
+		<img src="title.png" alt="What's My Forecast?" />
+	</div><!--end #title -->
+	<div id="zip_check">
+    	<div id="zip_title">
+        	<h2 class="bold">Enter Zip Code:</h2>
+        </div><!-- end #zip_title -->
+        <div id="zip_field">   	
+        	<input id="zip_code" type="text" maxlength="5" name="zip_code" placeholder="33309" />
+    	</div><!-- end #zip_field -->
+        <input class="bold" id="submit_button" type="submit" value="Go" onClick="retrieve_data()" />
+	</div><!--end zip_check -->
+    
+    	
+    <div id="results">
+    	<div id="main_weather">
+        	<div id="city_and_weather_block">
+        		<h2 class="bold" id="city"></h2>
+                <h2 id="weather"></h2>
+            	<p id="weather_description"></p>
+            </div><!-- end #city_and_weather_block -->    
+            <div id="temperature_block">
+            	<h1 id="temperature"></h1>
+                <p class="range" id="high"></p><p class="range" id="low"></p>   
+            </div><!-- end #temperature block -->
+        </div><!--end #main_weather-->   
+        <div id="additional_descriptions">
+            <h3 id="cloudiness"></h3>
+            <hr />
+            <h3 id="wind"></h3>
+            <hr />
+            <h3 id="pressure"></h3>
+            <hr />
+        	<h3 id="humidity"></h3>
+            <hr />
+            <h3 id="sunrise"></h3>
+            <hr />
+            <h3 id="sunset"></h3>
+        </div><!--end #additional_descriptions -->
+    </div><!-- end #results -->
+    
+    
+    
+    
+    
+    
+    
+</div><!-- end .inner_container -->   
+<script type="text/javascript">
+//API KEY: f0d3829f9d65ffc0d99bffef4742662d
+//http://api.openweathermap.org/data/2.5/forecast/city?id=524901&APPID={APIKEY} 
+//http://api.openweathermap.org/data/2.5/weather?zip=33309,us&APPID=f0d3829f9d65ffc0d99bffef4742662d 
+	var main_weather = document.getElementById("main_weather");
+	
+	function retrieve_data(){
+	var APP_ID = "f0d3829f9d65ffc0d99bffef4742662d";
+	var zipcode = document.getElementById("zip_code").value;
+	var results = document.getElementById("results");
+	
+	var city = document.getElementById("city");
+	var weather = document.getElementById("weather");
+	var weather_description = document.getElementById("weather_description");
+	var temperature = document.getElementById("temperature");
+	var high = document.getElementById("high");
+	var low = document.getElementById("low");
+	var cloudiness = document.getElementById("cloudiness");
+	var wind = document.getElementById("wind");
+	var pressure = document.getElementById("pressure");
+	var humidity = document.getElementById("humidity");
+	var sunrise = document.getElementById("sunrise");
+	var sunset = document.getElementById("sunset");
+	
+	var http_request = new XMLHttpRequest();
+	var FEED_URL = "http://api.openweathermap.org/data/2.5/weather?zip="+zipcode+",us&units=imperial&APPID="+APP_ID;
+	
+	http_request.onreadystatechange=function() {
+    	if (http_request.readyState == 4 && http_request.status == 200) {
+		  	var data = JSON.parse(http_request.responseText);
+			/*Weather List
+				Thunderstorm
+				Drizzle
+				Rain
+				Snow
+				Atmosphere
+				Clouds
+					-clear sky
+				Extreme
+				Additional
+			*/
+			if(data.cod!=200)
+				alert("Invalid Zip Code");
+			else{	
+			
+			main_weather.style.background="url(weather_bg.jpg)";
+			
+			main_weather.style.backgroundPosition=getBackgroundPos(data.weather[0].main, data.weather[0].description);
+			city.innerHTML = data.name;
+			weather.innerHTML = data.weather[0].main;
+			weather_description.innerHTML = capitalizeFirstLetter(data.weather[0].description);
+			temperature.innerHTML = Math.round(data.main.temp)+"&deg;";
+			high.innerHTML = "High: "+Math.round(data.main.temp_max)+"&deg;";
+			low.innerHTML = "Low: "+Math.round(data.main.temp_min)+"&deg;";
+			cloudiness.innerHTML = "Cloudiness: "+data.clouds.all+"%";
+			wind.innerHTML = "Wind: "+data.wind.speed+" mph "+check_wind_degree(data.wind.deg);
+			pressure.innerHTML = "Pressure: "+data.main.pressure+" hPa";
+			humidity.innerHTML = "Humidity: "+data.main.humidity+" %";
+			sunrise.innerHTML = "Sunrise: "+getTimeStamp(data.sys.sunrise);
+			sunset.innerHTML = "Sunset: "+getTimeStamp(data.sys.sunset);	
+			
+			
+			
+			results.style.opacity=1;
+			}
+    	}
+	}
+
+	http_request.open("GET", FEED_URL);
+	//http_request.setRequestHeader("Content-type", "application/json", true);
+	http_request.send();
+	
+
+		
+	};
+	function getTimeStamp(date){
+		var myDate = new Date(date*1000);
+		var str = myDate.toLocaleString().toString();
+		return str.split(",").pop();
+		
+	}
+	
+	function getBackgroundPos(main, description){
+		if(main=="Thunderstorm"){
+			return "0px -600px";}
+		else if(main=="Rain"){
+			return "0px -400px";}
+		else if(main=="Clouds" && description=="clear sky"){
+			return "0px 0px";}
+		else if(main=="Clear"){
+			return "0px 0px";}
+		else if(main=="Clouds" && description!="clear sky"){
+			return "0px -200px";}
+		else if(main=="Snow"){
+			return "0px -800px";}
+		else{
+			return "0px -1000px";}				
+	};
+	
+	
+	function capitalizeFirstLetter(string) {
+    	return string.charAt(0).toUpperCase() + string.slice(1);
+	};
+	
+	function check_wind_degree(degree){
+		if(degree >=0 && degree <30)	
+			return "N";
+		else if(degree > 30 && degree <60)
+			return "NE";	
+		else if(degree > 60 && degree <90)
+			return "E";
+		else if(degree > 90 && degree <120)
+			return "E";
+		else if(degree > 120 && degree <150)
+			return "SE";
+		else if(degree > 150 && degree <180)
+			return "S";
+		else if(degree > 180 && degree <210)
+			return "S";
+		else if(degree > 210 && degree <240)
+			return "SW";
+		else if(degree > 240 && degree <270)
+			return "W";
+		else if(degree > 270 && degree <300)
+			return "W";
+		else if(degree > 300 && degree <330)
+			return "NW";
+		else (degree > 330 && degree <360)
+			return "N";											
+	};	
+</script>
+
+ 
+</body>
+</html>
